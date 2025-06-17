@@ -6,6 +6,19 @@ import random
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def check_bound(rect: pg.rect) ->tuple[bool,bool]:
+    """
+    引数：こうかとんRectまたは爆弾Rect
+    戻り値：横方向，縦方向の画面内外判定結果
+    画面内ならTrue，画面外ならFalse
+    """
+    vertical,horizontal=True,True
+    if (rect.left < 0) or (rect.right > WIDTH):
+        vertical=False
+    if (rect.top < 0) or (rect.bottom > HEIGHT):
+        horizontal=False
+    return vertical,horizontal
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -30,7 +43,7 @@ def main():
         screen.blit(bg_img, [0, 0]) 
 
         key_lst = pg.key.get_pressed()
-        DELTA={ pg.K_UP : (0,-5) ,
+        DELTA={ pg.K_UP : (0,-5) , # 移動量の辞書
                 pg.K_DOWN : (0,5) ,
                 pg.K_RIGHT : (5,0) ,
                 pg.K_LEFT : (-5,0) }
@@ -39,8 +52,18 @@ def main():
             if key_lst[key]:
                 sum_mv[0]+=value[0]
                 sum_mv[1]+=value[1]
-        kk_rct.move_ip(sum_mv)
-        bb_rct.move_ip(vx,vy)
+                
+        kk_rct.move_ip(sum_mv) # こうかとんの移動
+        if check_bound(kk_rct) != (True,True):
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
+
+        bb_rct.move_ip(vx,vy) # 爆弾の移動
+        vertical,horizontal=check_bound(bb_rct)
+        if not vertical:
+            vx*=-1
+        if not horizontal:
+            vy*=-1
+
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img,bb_rct)
         pg.display.update()
