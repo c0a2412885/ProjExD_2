@@ -8,52 +8,56 @@ WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def check_bound(rect: pg.rect) -> tuple[bool,bool]:
-    """
-    引数：こうかとんRectまたは爆弾Rect
-    戻り値：横方向，縦方向の画面内外判定結果
-    画面内ならTrue，画面外ならFalse
-    """
-    vertical,horizontal = True, True
-    if (rect.left < 0) or (rect.right > WIDTH):
-        vertical = False
-    if (rect.top < 0) or (rect.bottom > HEIGHT):
-        horizontal = False
-    return vertical, horizontal
+        """
+        引数：こうかとんRectまたは爆弾Rect
+        戻り値：横方向，縦方向の画面内外判定結果
+        画面内ならTrue，画面外ならFalse
+        """
+        vertical,horizontal = True, True
+        if (rect.left < 0) or (rect.right > WIDTH):
+            vertical = False
+        if (rect.top < 0) or (rect.bottom > HEIGHT):
+            horizontal = False
+        return vertical, horizontal
 
 def GameOver(screen:pg.surface) -> None:
-    """
-    ゲームオーバー時にゲームオーバーの画面を表示する関数
-    """
-    box=pg.Surface((WIDTH,HEIGHT))
-    pg.draw.rect(box, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT,))
-    box.set_alpha(200)
+        """
+        ゲームオーバー時にゲームオーバーの画面を表示する関数
+        """
+        box=pg.Surface((WIDTH,HEIGHT))
+        pg.draw.rect(box, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT,))
+        box.set_alpha(200)
 
-    img=pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.2)
+        img=pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.2)
 
-    moji = pg.font.Font(None, 60)
-    text = moji.render("Game Over", True, (255, 255, 255))
+        moji = pg.font.Font(None, 60)
+        text = moji.render("Game Over", True, (255, 255, 255))
 
-    
-    screen.blit(box, [0, 0])
-    screen.blit(text, [400, 325])
-    screen.blit(img, [320, 320])
-    screen.blit(img, [660, 320])
-    pg.display.update()
-    time.sleep(5)
+        screen.blit(box, [0, 0])
+        screen.blit(text, [400, 325])
+        screen.blit(img, [320, 320])
+        screen.blit(img, [660, 320])
+        pg.display.update()
+        time.sleep(5)
     
 def Bomb_accelerate() -> tuple[list[int], list[pg.Surface]]:
-    """
-    徐々に加速、拡大する爆弾のタプルを返す関数
-    """
-    bb_accs=[ i for i in range(1, 11)]
-    bb_imgs=[]
-    for j in range(1, 11):
-        bb_img=pg.Surface((20*j, 20*j))
-        pg.draw.circle(bb_img, (255, 0, 0), (10*j, 10*j), 10*j)
-        bb_img.set_colorkey((0,0,0))
-        bb_imgs.append(bb_img)
+        """
+        徐々に加速、拡大する爆弾のタプルを返す関数
+        """
+        bb_accs=[ i for i in range(1, 11)]
+        bb_imgs=[]
+        for j in range(1, 11):
+            bb_img=pg.Surface((20*j, 20*j))
+            pg.draw.circle(bb_img, (255, 0, 0), (10*j, 10*j), 10*j)
+            bb_img.set_colorkey((0,0,0))
+            bb_imgs.append(bb_img)
     
-    return bb_imgs, bb_accs
+        return bb_imgs, bb_accs
+
+def kk_angle(sum_mv:list[int, int]) -> pg.surface:
+        """
+        移動量によって向きを変える関数
+        """
 
 
 def main():
