@@ -2,22 +2,45 @@ import os
 import sys
 import pygame as pg
 import random
+import time
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def check_bound(rect: pg.rect) ->tuple[bool,bool]:
+def check_bound(rect: pg.rect) -> tuple[bool,bool]:
     """
     引数：こうかとんRectまたは爆弾Rect
     戻り値：横方向，縦方向の画面内外判定結果
     画面内ならTrue，画面外ならFalse
     """
-    vertical,horizontal=True,True
+    vertical,horizontal = True, True
     if (rect.left < 0) or (rect.right > WIDTH):
-        vertical=False
+        vertical = False
     if (rect.top < 0) or (rect.bottom > HEIGHT):
-        horizontal=False
-    return vertical,horizontal
+        horizontal = False
+    return vertical, horizontal
+
+def GameOver(screen:pg.surface) -> None:
+    """
+    ゲームオーバー時にゲームオーバーの画面を表示する関数
+    """
+    box=pg.Surface((WIDTH,HEIGHT))
+    pg.draw.rect(box, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT,))
+    box.set_alpha(200)
+
+    img=pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.2)
+
+    moji = pg.font.Font(None, 60)
+    text = moji.render("Game Over", True, (255, 255, 255))
+
+    
+    screen.blit(box, [0, 0])
+    screen.blit(text, [400, 325])
+    screen.blit(img, [320, 320])
+    screen.blit(img, [660, 320])
+    pg.display.update()
+    time.sleep(5)
+    
 
 
 def main():
@@ -40,8 +63,9 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-        if kk_rct.colliderect(bb_rct):
+        if kk_rct.colliderect(bb_rct): # 爆弾に当たったらゲームオーバー
             print("ゲームオーバー")
+            GameOver(screen)
             return
         screen.blit(bg_img, [0, 0]) 
 
