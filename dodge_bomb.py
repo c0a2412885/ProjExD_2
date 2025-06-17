@@ -41,6 +41,19 @@ def GameOver(screen:pg.surface) -> None:
     pg.display.update()
     time.sleep(5)
     
+def Bomb_accelerate() -> tuple[list[int], list[pg.Surface]]:
+    """
+    徐々に加速、拡大する爆弾のタプルを返す関数
+    """
+    bb_accs=[ i for i in range(1, 11)]
+    bb_imgs=[]
+    for j in range(1, 11):
+        bb_img=pg.Surface((20*j, 20*j))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*j, 10*j), 10*j)
+        bb_img.set_colorkey((0,0,0))
+        bb_imgs.append(bb_img)
+    
+    return bb_imgs, bb_accs
 
 
 def main():
@@ -69,6 +82,16 @@ def main():
             return
         screen.blit(bg_img, [0, 0]) 
 
+        bb_imgs, bb_accs=Bomb_accelerate()
+        #print(bb_accs,bb_imgs)
+        # print([min(tmr//500, 9)])
+        bb_img=bb_imgs[min(tmr//500, 9)]
+        # bb_rct=bb_imgs[min(tmr//200, 9)].get_rect()
+        avx=vx*bb_accs[min(tmr//500, 9)]
+        avy=vy*bb_accs[min(tmr//500, 9)]
+        # vx=avx
+        # vy=avy
+
         key_lst = pg.key.get_pressed()
         DELTA={ pg.K_UP : (0,-5) , # 移動量の辞書
                 pg.K_DOWN : (0,5) ,
@@ -84,7 +107,7 @@ def main():
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
 
-        bb_rct.move_ip(vx,vy) # 爆弾の移動
+        bb_rct.move_ip(avx,avy) # 爆弾の移動
         vertical,horizontal=check_bound(bb_rct)
         if not vertical:
             vx*=-1
